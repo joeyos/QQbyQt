@@ -1,0 +1,40 @@
+<RCC>
+    <qresource prefix="/">
+        <file>images/bold.png</file>
+        <file>images/clear.png</file>
+        <file>images/color.png</file>
+        <file>images/italic.png</file>
+        <file>images/save.png</file>
+        <file>images/send.png</file>
+        <file>images/under.png</file>
+        <file>images/shadow_bottom.png</file>
+        <file>images/shadow_corner1.png</file>
+        <file>images/shadow_corner2.png</file>
+        <file>images/shadow_corner3.png</file>
+        <file>images/shadow_corner4.png</file>
+        <file>images/shadow_left.png</file>
+        <file>images/shadow_right.png</file>
+        <file>images/shadow_top.png</file>
+        <file>images/QComboBox.png</file>
+        <file>images/exit.png</file>
+        <file>images/max.png</file>
+        <file>images/menu.png</file>
+        <file>images/min.png</file>
+        <file>images/control.png</file>
+        <file>images/file.png</file>
+        <file>images/mcallphone.png</file>
+        <file>images/people.png</file>
+        <file>images/software.png</file>
+        <file>images/table.png</file>
+        <file>images/video.png</file>
+        <file>images/head.jpg</file>
+        <file>images/star.png</file>
+        <file>images/background.jpg</file>
+        <file>images/bottom.png</file>
+        <file>images/top.png</file>
+        <file>images/background1.jpg</file>
+        <file>images/background2.jpg</file>
+        <file>images/background3.jpg</file>
+        <file>images/background4.jpg</file>
+    </qresource>
+</RCC>

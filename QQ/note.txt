@@ -1,0 +1,199 @@
+ui->userTableWidget->setEditTriggers(QAbstractItemView::NoEditTriggers);//表格只读
+//==========================================
+void Widget::on_closeButton_clicked()
+{
+    /* 慢慢消失的效果 */
+    QPropertyAnimation *animation = new QPropertyAnimation(this,"windowOpacity");
+    animation->setDuration(1000);
+    animation->setStartValue(1);
+    animation->setEndValue(0);
+    animation->start();
+    connect(animation,SIGNAL(finished()),this,SLOT(close()));//效果显示完后关闭
+}
+//================================================
+private:
+    /* 鼠标拖动窗口 */
+    void mouseMoveEvent(QMouseEvent *event);
+    void mousePressEvent(QMouseEvent *event);
+    /* 记录窗口当前的位置 */
+    QPoint StartPos;
+
+void Widget::mousePressEvent(QMouseEvent *event)
+{
+    if(event->buttons() == Qt::LeftButton)
+    {
+    //记录窗口此时的坐标
+    StartPos = event->globalPos() - this->frameGeometry().topLeft();
+    }
+}
+void Widget::mouseMoveEvent(QMouseEvent *event)
+{
+    QPoint EndPos;
+    if ( event->buttons() == Qt::LeftButton )
+    {
+    EndPos = event->globalPos() - StartPos;
+    this->move(EndPos);
+    }
+}
+//====================================================
+    /*
+    * set background image
+    */
+    QPixmap bgImages(":/images/background.jpg");
+    QPalette bgPalette = this->palette();
+    bgPalette.setBrush(QPalette::Background,bgImages);
+    this->setPalette(bgPalette);
+    setMask(bgImages.mask());// set background mask attribute same as background's image
+//==================================================
+QTableWidget不仅允许把文字加到单元格，还允许把控件也放到单元格中。
+比如，把一个下拉框加入单元格，可以这么做：
+    QComboBox *comBox = new QComboBox();  
+    comBox->addItem("Y");  
+    comBox->addItem("N");  
+    tableWidget->setCellWidget(0,2,comBox); 
+//=================================
+通过实现 itemClicked (QTableWidgetItem *) 信号的槽函数，
+就可以获得鼠标单击到的单元格指针，进而获得其中的文字信息
+将itemClicked信号与函数getItem绑定
+    connect(tableWidget,SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)),this,SLOT(getItem(QTreeWidgetItem*,int)));
+//==============================================
+#include <QItemDelegate>//+++++去掉表格虚框+++++
+#include <QStyledItemDelegate>
+class NoFocusDelegate : public QStyledItemDelegate
+{
+protected:
+    void paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const;
+};
+
+void Widget::mouseMoveEvent(QMouseEvent *event)
+{
+    //去表格虚框
+    QPoint EndPos;
+    if ( event->buttons() == Qt::LeftButton )
+    {
+    EndPos = event->globalPos() - StartPos;
+    this->move(EndPos);
+    }
+}
+void NoFocusDelegate::paint(QPainter* painter, const QStyleOptionViewItem & option, const QModelIndex &index) const
+{
+    QStyleOptionViewItem itemOption(option);
+    if (itemOption.state & QStyle::State_HasFocus)
+        itemOption.state = itemOption.state ^ QStyle::State_HasFocus;
+    QStyledItemDelegate::paint(painter, itemOption, index);
+}
+然后调用：
+ui->userTableWidget->setItemDelegate(new NoFocusDelegate());
+//==========================================================
+        QTableWidgetItem *user=new QTableWidgetItem(userName);//表格文字居中显示
+        QTableWidgetItem *host=new QTableWidgetItem(localHostName);
+        QTableWidgetItem *ip=new QTableWidgetItem(ipAddress);
+        user->setTextAlignment(Qt::AlignCenter);
+        host->setTextAlignment(Qt::AlignCenter);
+        ip->setTextAlignment(Qt::AlignCenter);
+ui->userTableWidget->setTextElideMode(Qt::ElideRight);//防止文本过长显示右边
+ui->userTableWidget->setEditTriggers(QAbstractItemView::NoEditTriggers);//表格只读
+//==============================================================
+//=====================		垂直滚动条样式1	=================
+    ui->messageBrowser->verticalScrollBar()->setStyleSheet(
+        "QScrollBar:vertical{width:8px;background:rgba(0,0,0,0%);margin:0px,0px,0px,0px;padding-top:9px;padding-bottom:9px;}"//留9px给上下箭头
+        "QScrollBar::handle:vertical{width:8px;background:rgba(0,0,0,25%);border-radius:4px;min-height:20;}"//上下设置为椭圆
+        "QScrollBar::handle:vertical:hover{width:8px;background:rgba(0,0,0,50%);border-radius:4px;min-height:20;}"//鼠标悬浮颜色变深
+        "QScrollBar::add-line:vertical{height:9px;width:8px;border-image:url(:/images/bottom.png);subcontrol-position:bottom;}"//下箭头
+        "QScrollBar::sub-line:vertical{height:9px;width:8px;border-image:url(:/images/top.png);subcontrol-position:top;}"//上箭头
+        "QScrollBar::add-line:vertical:hover{height:7px;width:6px;border-image:url(:/images/bottom.png);border:1px;subcontrol-position:bottom;}"//鼠标悬浮下箭头
+        "QScrollBar::sub-line:vertical:hover{height:7px;width:6px;border-image:url(:/images/top.png);border:1px;subcontrol-position:top;}"//鼠标悬浮上箭头
+        "QScrollBar::add-page:vertical,QScrollBar::sub-page:vertical{background:rgba(0,0,0,10%);border-radius:4px;}");//滚动时部分
+//======================	垂直滚动条样式2	===================
+    ui->messageTextEdit->verticalScrollBar()->setStyleSheet(
+        "QScrollBar{background:transparent; width: 10px;}"
+        "QScrollBar::handle{background:lightgray; border:2px solid transparent; border-radius:5px;}"
+        "QScrollBar::handle:hover{background:gray;}"
+        "QScrollBar::sub-line{background:transparent;}"
+        "QScrollBar::add-line{background:transparent;}");
+//====================================================================
+    /********** 显示按钮菜单(pushbutton提升为MenuButton大写)********************/
+    QMenu * menu = ui->menuButton->getmenu();
+    SettingAct = new QAction(QIcon(":/image/setting.png"), tr("&设置"), this);
+    AboutAct = new QAction(QIcon(":/image/setting.png"), tr("&关于我们"), this);
+    menu->addAction(SettingAct);
+    menu->addAction(AboutAct);
+--------------------menubutton.h----------------------
+#ifndef MENUBUTTON_H
+#define MENUBUTTON_H
+#include <QPushButton>
+class QMenu;
+class MenuButton : public QPushButton //继承QPushButton类
+{
+    Q_OBJECT
+public:
+    explicit MenuButton(QWidget *parent = 0);
+    QMenu *getmenu();
+private slots:
+    void PushMenu();
+private:
+    QMenu *menu;
+};
+#endif // MENUBUTTON_H
+--------------------menupushbutton.cpp--------------
+#include "menubutton.h"
+#include <QMenu>
+MenuButton::MenuButton(QWidget *parent):
+    QPushButton(parent)
+{
+    menu = new QMenu(this);
+    connect(this,SIGNAL(clicked()),this,SLOT(PushMenu()));
+}
+QMenu *MenuButton::getmenu()
+{
+    return menu;
+}
+void MenuButton::PushMenu()
+{
+    QPoint pos;
+    int y = pos.y();
+    pos.setY(y+this->geometry().height());
+    menu->exec(this->mapToGlobal(pos));
+}
+----------------widget.h--------------
+#include <QMenu>
+#include <QAction>
+    /* AboutpushButton按钮下的菜单 */
+    QAction *AboutAct;
+    QAction *SettingAct;
+//================================================================================
+//==================	回车键发消息（只能光标在末尾）	==================
+    if(ui->messageTextEdit->toPlainText().endsWith("\n") && ui->messageTextEdit->toPlainText()!="\n")
+    {
+         sendMessage(Message);
+    }
+    else if(ui->messageTextEdit->toPlainText().endsWith("\n"))
+    {
+        QMessageBox::warning(0,tr("警告"),tr("发送内容不为空"),QMessageBox::Ok);
+        ui->messageTextEdit->clear();//清空TextEdit
+        return;
+    }
+//=========================	回车键发消息优化	===================
+protected:
+    bool eventFilter(QObject *obj, QEvent *event);//+++++++++回车键发消息
+
+bool Widget::eventFilter(QObject *obj, QEvent *event)
+{
+    if(obj == ui->messageTextEdit)
+    {
+        if (event->type() == QEvent::KeyPress)
+        {
+            QKeyEvent *keyEvent = static_cast <QKeyEvent *>(event);
+            if(keyEvent->key()==Qt::Key_Return)
+            {
+                qDebug()<<"int envent filter";
+                emit sendMessage(Message);
+                return true;
+            }
+        }
+    }
+    return QObject::eventFilter(obj, event);
+}
+
+ui->messageTextEdit->installEventFilter(this);//回车键发消息监听
+//===============================================================
